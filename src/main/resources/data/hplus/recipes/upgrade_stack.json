@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#QS",
+    "QGQ",
+    "PQL"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:hay_block"
+    },
+    "Q": {
+      "item": "minecraft:quartz_block"
+    },
+    "S": {
+      "item": "minecraft:slime_block"
+    },
+    "G": {
+      "item": "hplus:upgrade_base"
+    },
+    "P": {
+      "item": "minecraft:snow_block"
+    },
+    "L": {
+      "item": "minecraft:lapis_block"
+    }
+  },
+  "result": {
+    "item": "hplus:upgrade_stack",
+    "count": 1
+  }
+}
