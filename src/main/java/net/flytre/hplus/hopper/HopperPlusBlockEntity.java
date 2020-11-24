@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class HopperPlusBlockEntity extends LockableContainerBlockEntity implements Hopper, Tickable {
+public class HopperPlusBlockEntity extends LockableContainerBlockEntity implements Hopper, Tickable, SidedInventory {
 
 
     private final DefaultedList<ItemStack> upgrades;
@@ -45,12 +45,12 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
     private int transferCooldown;
     private long lastTickTime;
 
-
     //Custom features
     private boolean stackUpgrade = false;
     private int maxCooldown = 8;
     private boolean vacuum = true;
     private boolean trash = false;
+    private boolean locked = false;
 
     public HopperPlusBlockEntity() {
         super(RegistryHandler.HOPPER_PLUS_BLOCK_ENTITY);
@@ -71,6 +71,10 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
 
     //Looks at the inventory above the hopper. If it is not empty, pull from whatever slots are available in the down direction.
     private static boolean extract(HopperPlusBlockEntity hopper) {
+
+        if(hopper.locked)
+            return false;
+
         Inventory inventory = getInputInventory(hopper);
 
         if (inventory instanceof HopperPlusBlockEntity) {
@@ -280,7 +284,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
 
     public void onEntityCollided(Entity entity) {
 
-        if (!vacuum)
+        if (!vacuum || locked)
             return;
 
         if (entity instanceof ItemEntity) {
@@ -301,7 +305,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        if (slot > 4)
+        if (slot > 4 || locked)
             return false;
         return passFilterTest(stack);
     }
@@ -377,6 +381,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
         return false;
     }
 
+
     public void onUpgradesUpdated() {
         this.stackUpgrade = hasUpgrade(new ItemStack(RegistryHandler.STACK_UPGRADE));
         this.vacuum = hasUpgrade(new ItemStack(RegistryHandler.VACUUM_UPGRADE));
@@ -386,6 +391,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
             this.maxCooldown = 4;
         if (hasUpgrade(new ItemStack(RegistryHandler.SPEED_UPGRADE_HIGH)))
             this.maxCooldown = 2;
+        this.locked = hasUpgrade(new ItemStack(RegistryHandler.LOCK_UPGRADE));
     }
 
     @Override
@@ -454,7 +460,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
 
     private void insertAndExtract(Supplier<Boolean> extractMethod) {
         if (this.world != null && !this.world.isClient) {
-            if (!this.needsCooldown() && this.getCachedState().get(HopperPlusBlock.ENABLED)) {
+            if (!this.needsCooldown() && this.getCachedState().get(HopperPlusBlock.ENABLED) && !locked) {
                 boolean bl = false;
 
                 if (!isEmpty() && trash)
@@ -507,7 +513,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
         if (inventory == null)
             return false;
 
-        if(transferCooldown > 0)
+        if(transferCooldown > 0 || locked)
             return false;
 
         if(inventory instanceof HopperPlusBlockEntity && willInsert((HopperPlusBlockEntity) inventory))
@@ -618,5 +624,20 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
     public void clear() {
         this.getInvStackList().clear();
         this.upgrades.clear();
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return new int[]{0,1,2,3,4};
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return !locked && transferCooldown <= 0;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return !locked && transferCooldown <= 0;
     }
 }

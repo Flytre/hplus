@@ -9,6 +9,8 @@
   "item.hplus.upgrade_stack" : "Stack Upgrade",
   "item.hplus.upgrade_vacuum" : "Vacuum Upgrade",
   "item.hplus.upgrade_void": "Void Upgrade",
+  "item.hplus.upgrade_lock": "Lock Upgrade",
+  "item.hplus.upgrade_lock.tooltip": "Freeze Hopper+ contents",
   "container.hplus.upgrade_filter" : "Filter Settings",
   "item.hplus.filter_upgrade.tooltip" : "and %s more...",
   "item.hplus.upgrade_speed.tooltip" : "2x speed boost!",

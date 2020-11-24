@@ -22,7 +22,6 @@ public class FilterScreen extends HandledScreen<FilterScreenHandler> {
 
     private static final Identifier TEXTURE = new Identifier("hplus:textures/gui/container/filter.png");
     private static final Identifier MODE_BUTTON = new Identifier("hplus:textures/gui/button/check_ex.png");
-    private static final Identifier TRASHCAN = new Identifier("hplus:textures/gui/button/trash_can.png");
 
     private final int startFrame;
 

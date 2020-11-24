@@ -36,7 +36,9 @@ public class RegistryHandler {
     public static final Item STACK_UPGRADE = new ItemUpgrade();
     public static final Item VACUUM_UPGRADE = new ItemUpgrade();
     public static final Item VOID_UPGRADE = new ItemUpgrade();
+    public static final Item LOCK_UPGRADE = new ItemUpgrade();
     public static final Item BASE_UPGRADE = new Item(new FabricItemSettings().group(ItemGroup.REDSTONE));
+
 
     public static final ScreenHandlerType<FilterScreenHandler> FILTER_SCREEN_HANDLER  = ScreenHandlerRegistry.registerSimple(new Identifier("hplus", "upgrade_filter"), FilterScreenHandler::new);
     public static BlockEntityType<HopperPlusBlockEntity> HOPPER_PLUS_BLOCK_ENTITY;
@@ -62,6 +64,7 @@ public class RegistryHandler {
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_speed_high"), SPEED_UPGRADE_HIGH);
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_stack"), STACK_UPGRADE);
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_void"), VOID_UPGRADE);
+        Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_lock"), LOCK_UPGRADE);
 
 
         ServerSidePacketRegistry.INSTANCE.register(FILTER_MODE, (packetContext, attachedData) -> {
@@ -71,25 +74,6 @@ public class RegistryHandler {
                 if(stack.getTag() == null)
                     stack.setTag(new CompoundTag());
                 stack.getTag().putInt("filterType",state);
-            });
-        });
-
-        ServerSidePacketRegistry.INSTANCE.register(FILTER_TRASH, (packetContext, attachedData) -> {
-            packetContext.getTaskQueue().execute(() -> {
-                ItemStack stack = packetContext.getPlayer().getMainHandStack();
-
-                if(!(stack.getItem() instanceof FilterUpgrade))
-                    return;
-
-                CompoundTag tag = stack.getTag();
-                if(tag == null) {
-                    tag = new CompoundTag();
-                    stack.setTag(tag);
-                }
-                FilterInventory inventory = FilterUpgrade.getInventory(stack);
-                inventory.clear();
-                tag.put("filter", inventory.toTag());
-                packetContext.getPlayer().openHandledScreen(null);
             });
         });
 
