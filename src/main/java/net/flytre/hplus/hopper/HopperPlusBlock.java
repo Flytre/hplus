@@ -192,7 +192,6 @@ public class HopperPlusBlock extends BlockWithEntity {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof HopperPlusBlockEntity) {
                 ItemScatterer.spawn(world, pos, (HopperPlusBlockEntity) blockEntity);
-                ItemScatterer.spawn(world,pos,((HopperPlusBlockEntity) blockEntity).getUpgrades());
                 world.updateComparators(pos, this);
             }
             super.onStateReplaced(state, world, pos, newState, moved);

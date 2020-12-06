@@ -5,7 +5,10 @@ import net.flytre.hplus.RegistryHandler;
 import net.flytre.hplus.filter.FilterInventory;
 import net.flytre.hplus.filter.FilterUpgrade;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.Hopper;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +35,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -80,7 +85,7 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
         if (inventory instanceof HopperPlusBlockEntity) {
             if (((HopperPlusBlockEntity) inventory).transferCooldown > 0)
                 return false;
-            if(willInsert((HopperPlusBlockEntity) inventory)) {
+            if(hopper.willInsert((HopperPlusBlockEntity) inventory)) {
                 return false;
             }
         }
@@ -500,11 +505,14 @@ public class HopperPlusBlockEntity extends LockableContainerBlockEntity implemen
     }
 
 
-    private static boolean willInsert(HopperPlusBlockEntity hopper) {
+    private boolean willInsert(HopperPlusBlockEntity hopper) {
         Inventory inventory = hopper.getOutputInventory();
         if (inventory == null)
             return false;
+        if(inventory == this)
+            return false;
         return hopper.insert();
+
     }
 
     //insert items to an inventory from the hopper

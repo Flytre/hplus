@@ -8,10 +8,8 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.flytre.hplus.filter.*;
-import net.flytre.hplus.hopper.HopperPlusBlock;
-import net.flytre.hplus.hopper.HopperPlusBlockEntity;
-import net.flytre.hplus.hopper.HopperPlusScreen;
-import net.flytre.hplus.hopper.HopperPlusScreenHandler;
+import net.flytre.hplus.hopper.*;
+import net.flytre.hplus.recipe.HopperUpgradeRecipe;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
@@ -20,6 +18,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -48,6 +50,7 @@ public class RegistryHandler {
     public static final Identifier FILTER_MODE = new Identifier("hplus", "filter_mode");
     public static final Identifier FILTER_TRASH = new Identifier("hplus", "filter_trash");
 
+    public static SpecialRecipeSerializer<HopperUpgradeRecipe> UPGRADE_RECIPE;
 
 
     public static void onInit() {
@@ -55,7 +58,7 @@ public class RegistryHandler {
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_base"), BASE_UPGRADE);
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_filter"), FILTER_UPGRADE);
         Registry.register(Registry.BLOCK, new Identifier("hplus", "hopper_plus"), HOPPER_PLUS);
-        Registry.register(Registry.ITEM, new Identifier("hplus", "hopper_plus"), new BlockItem(HOPPER_PLUS, new Item.Settings().group(ItemGroup.REDSTONE)));
+        Registry.register(Registry.ITEM, new Identifier("hplus", "hopper_plus"), new HopperPlusBlockItem(HOPPER_PLUS, new Item.Settings().group(ItemGroup.REDSTONE)));
         HOPPER_PLUS_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "hplus:hopper_plus", BlockEntityType.Builder.create(HopperPlusBlockEntity::new, HOPPER_PLUS).build(null));
 
 
@@ -67,6 +70,7 @@ public class RegistryHandler {
         Registry.register(Registry.ITEM, new Identifier("hplus", "upgrade_lock"), LOCK_UPGRADE);
 
 
+        UPGRADE_RECIPE = register("hplus:upgrade_recipe", new SpecialRecipeSerializer<>(HopperUpgradeRecipe::new));
         ServerSidePacketRegistry.INSTANCE.register(FILTER_MODE, (packetContext, attachedData) -> {
             int state = attachedData.readInt();
             packetContext.getTaskQueue().execute(() -> {
@@ -77,6 +81,7 @@ public class RegistryHandler {
             });
         });
 
+
     }
 
     @Environment(EnvType.CLIENT)
@@ -85,5 +90,9 @@ public class RegistryHandler {
         ScreenRegistry.register(HOPPER_PLUS_SCREEN_HANDLER, HopperPlusScreen::new);
     }
 
+
+    static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
+        return Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
+    }
 
 }

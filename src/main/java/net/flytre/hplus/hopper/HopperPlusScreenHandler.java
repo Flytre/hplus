@@ -27,11 +27,15 @@ public class HopperPlusScreenHandler extends ScreenHandler {
         this.hopperInventory = inventory;
         hopperInventory.onOpen(playerInventory.player);
         //Add slots
-
         //hopper inventory
         int l;
         for (l = 0; l < 5; ++l) {
             this.addSlot(new Slot(hopperInventory, l, 44 + l * 18, 41));
+        }
+
+        //filter inventory
+        for (l = 0; l < 9; ++l) {
+            this.addSlot(new UpgradeSlot(hopperInventory, 5 + l, 8 + l * 18, 14));
         }
 
         //player inventory
@@ -43,11 +47,6 @@ public class HopperPlusScreenHandler extends ScreenHandler {
 
         for (l = 0; l < 9; ++l) {
             this.addSlot(new Slot(playerInventory, l, 8 + l * 18, 125));
-        }
-
-        //filter inventory
-        for (l = 0; l < 9; ++l) {
-            this.addSlot(new UpgradeSlot(hopperInventory, 5 + l, 8 + l * 18, 14));
         }
     }
 
@@ -61,15 +60,18 @@ public class HopperPlusScreenHandler extends ScreenHandler {
             ItemStack stack = getSlot(slotId).getStack();
             int upgradeSlot = hopperInventory.getFirstEmptyUpgradeSlot();
             if (stack.getItem() instanceof HopperUpgrade && actionType == SlotActionType.QUICK_MOVE) {
-                if (slotId >= 41 && slotId <= 49) {
+                if (slotId >= 5 && slotId <= 13) {
                     if(playerInventory.insertStack(stack)) {
                         getSlot(slotId).setStack(ItemStack.EMPTY);
                         hopperInventory.onUpgradesUpdated();
                         return ItemStack.EMPTY;
                     }
                 } else if(upgradeSlot != -1 && !hasUpgrade(stack)) {
-                    hopperInventory.getUpgrades().set(upgradeSlot, stack);
-                    getSlot(slotId).setStack(ItemStack.EMPTY);
+                    ItemStack stack2 = stack.copy();
+                    stack2.setCount(1);
+                    stack.decrement(1);
+                    hopperInventory.getUpgrades().set(upgradeSlot, stack2);
+                    getSlot(slotId).setStack(stack);
                     hopperInventory.onUpgradesUpdated();
                     return ItemStack.EMPTY;
                 }
@@ -92,10 +94,10 @@ public class HopperPlusScreenHandler extends ScreenHandler {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             if (index < this.hopperInventory.size()) {
-                if (!this.insertItem(itemStack2, this.hopperInventory.size(), this.slots.size(), false)) {
+                if (!this.insertItem(itemStack2, 14, this.slots.size(), false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(itemStack2, 0, this.hopperInventory.size(), false)) {
+            } else if (!this.insertItem(itemStack2, 0, 5, false)) {
                 return ItemStack.EMPTY;
             }
 

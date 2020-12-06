@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class FilterUpgrade extends Item implements HopperUpgrade {
+public class FilterUpgrade extends ItemUpgrade implements HopperUpgrade {
 
 
     public FilterUpgrade(Settings settings) {
-        super(settings.maxCount(1));
+        super(settings);
     }
 
     public static FilterInventory getInventory(ItemStack stack) {

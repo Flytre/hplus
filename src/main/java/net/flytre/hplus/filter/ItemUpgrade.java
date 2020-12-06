@@ -8,18 +8,27 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemUpgrade extends Item implements HopperUpgrade {
 
+    public static final ArrayList<ItemUpgrade> UPGRADES = new ArrayList<>();
     private String key;
 
 
     public ItemUpgrade() {
-        super(new FabricItemSettings().group(ItemGroup.REDSTONE).maxCount(1));
+        super(new FabricItemSettings().group(ItemGroup.REDSTONE));
+        UPGRADES.add(this);
+    }
+
+    public ItemUpgrade(Settings settings) {
+        super(settings);
+        UPGRADES.add(this);
     }
 
     public ItemUpgrade(String descriptionKey) {

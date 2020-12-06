@@ -10,6 +10,17 @@
             {
               "function": "minecraft:copy_name",
               "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "Upgrades",
+                  "target": "BlockEntityTag.Upgrades",
+                  "op": "replace"
+                }
+              ]
             }
           ],
           "name": "hplus:hopper_plus"
